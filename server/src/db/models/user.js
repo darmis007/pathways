@@ -1,33 +1,38 @@
-const Model = require('../core/Model')
-const queries = require('../queries/queries')
-const jwt = require('jsonwebtoken')
+const Model = require("../core/Model")
+const queries = require("../queries/queries")
+const jwt = require("jsonwebtoken")
 
 class User extends Model {
     constructor(neoResult) {
         super(neoResult)
+    }
 
-        this.generateToken = () => {
-            console.log("HERE")
-            const encoded = jwt.sign({ id: this.id }, process.env.JWT_SECRET || 'lolmao12345')
-            console.log("ENC", encoded)
-            return encoded
-        }
+    generateToken = () => {
+        const encoded = jwt.sign(
+            { username: this.username },
+            process.env.JWT_SECRET || "lolmao12345"
+        )
+        return encoded
     }
 
     static schema = () => ({
         id: String,
         name: String,
+        email: String,
         username: String,
-        password: String
+        password: String,
     })
 
     static findByToken = async (token) => {
         try {
-            const decoded = jwt.verify(token, process.env.JWT_SECRET || 'lolmao12345')
+            const decoded = jwt.verify(
+                token,
+                process.env.JWT_SECRET || "lolmao12345"
+            )
             const query = queries.user.findOne({
-                id: decoded.id
+                username: decoded.username,
             })
-    
+
             const result = await query.run()
             const userNode = result.records[0].get(0)
             const user = new User(userNode)
@@ -38,7 +43,6 @@ class User extends Model {
             return null
         }
     }
-
 }
 
 module.exports = User

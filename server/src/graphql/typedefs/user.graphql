@@ -1,0 +1,19 @@
+type User {
+  username: String
+  name: String
+  stepsInProgress: [ProgressStatus]
+  pathwaysInProgress: [Pathway] @relation(name: "PATHWAY_PROGRESS", direction: "OUT")
+  created: [Pathway] @relation(name: "HAS_CREATED", direction: "OUT")
+}
+
+type ProgressStatus @relation(name: "PROGRESS_STATUS") {
+  from: User
+  to: Step
+  status: StepStatus
+}
+
+enum StepStatus {
+  NOT_STARTED
+  IN_PROGRESS
+  HAS_COMPLETED
+}
